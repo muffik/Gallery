@@ -87,6 +87,19 @@ public class FileController {
         } else {
             throw new DataFormatException("File must not be empty!");
         }
+        try {
+            File f=new File(fileName);
+            BufferedImage image=ImageIO.read(f);
+            if (image==null){
+                if (!f.delete()){
+                    throw new IOException();
+                }
+                System.out.println("The file isn't an image!");
+                throw new DataFormatException("The file isn't an image!");
+            }
+        } catch (IOException ex) {
+            System.out.println("Unknown IO exception has occured!");
+        }
         return imageDAO.add(Integer.parseInt(albumId), originalName, hashedFilename, displayName);
     }
 
