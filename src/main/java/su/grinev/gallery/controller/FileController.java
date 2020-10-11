@@ -16,8 +16,10 @@ import su.grinev.gallery.exception.ResourceNotFoundException;
 import su.grinev.gallery.model.Image;
 
 import javax.activation.MimetypesFileTypeMap;
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -81,6 +83,16 @@ public class FileController {
         } else {
             throw new DataFormatException("File must not be empty!");
         }
+        try {
+            BufferedImage image = ImageIO.read(new File(fileName));
+            if (image == null) {
+                System.out.println("The file isn't an image!");
+                throw new DataFormatException("The file isn't an image!");
+            }
+        } catch(IOException ex) {
+            System.out.println("Unknown IO exception has occurred.");
+        }
+
         return imageDAO.add(Integer.parseInt(albumId), displayName, hashedFilename);
     }
 
