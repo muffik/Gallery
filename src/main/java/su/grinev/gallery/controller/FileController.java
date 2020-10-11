@@ -15,18 +15,14 @@ import su.grinev.gallery.exception.DataFormatException;
 import su.grinev.gallery.exception.ResourceNotFoundException;
 import su.grinev.gallery.model.Image;
 
-import javax.activation.MimetypesFileTypeMap;
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Iterator;
 
 @Controller
 public class FileController {
@@ -94,11 +90,11 @@ public class FileController {
                 if (!f.delete()){
                     throw new IOException();
                 }
-                System.out.println("The file isn't an image!");
+            //    System.out.println("The file isn't an image!");
                 throw new DataFormatException("The file isn't an image!");
             }
         } catch (IOException ex) {
-            System.out.println("Unknown IO exception has occured!");
+            log.error("Unknown IO exception has occurred!");
         }
         return imageDAO.add(Integer.parseInt(albumId), originalName, hashedFilename, displayName);
     }
