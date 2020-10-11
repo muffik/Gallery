@@ -35,7 +35,7 @@ public class ImageDAO {
     public Image add(int albumId, String displayName, String fileName){
         Image image=new Image(++IMAGE_COUNT, albumId, displayName, fileName);
         image.setUploadDate(LocalDate.now());
-        images.put(image.getId(), image);
+        images.put(IMAGE_COUNT, image);
         return image;
     }
 

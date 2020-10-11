@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import su.grinev.gallery.exception.ResourceNotFoundException;
 import su.grinev.gallery.model.Album;
 import org.springframework.stereotype.Component;
+import su.grinev.gallery.model.Image;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,30 +40,18 @@ public class AlbumDAO {
 
     public Album add(String name){
         Album album=new Album(++ALBUM_COUNT, name);
-        File directory = new File(imagedao.uploadDirectory+"\\"+Integer.toString(album.getId()));
-        if (! directory.exists()) directory.mkdir();
-        if (directory.exists()) {
-            albums.put(album.getId(), album);
-        } else throw new ResourceNotFoundException();
+        albums.put(ALBUM_COUNT, album);
         return album;
-    }
-
-    public static boolean deleteDirectory(File directoryToBeDeleted) {
-        File[] allContents = directoryToBeDeleted.listFiles();
-        if (allContents != null) {
-            for (File file : allContents) {
-                deleteDirectory(file);
-            }
-        }
-        return directoryToBeDeleted.delete();
     }
 
     public void remove(int albumId) throws IOException {
         if (albums.get(albumId)==null) throw new ResourceNotFoundException("Invalid albumId");
-        File dir = new File(imagedao.uploadDirectory+"\\"+albumId);
-        if (deleteDirectory(dir)) {
-            albums.remove(albumId);
-        } else throw new IOException();
+        List<Image> imagesToRemove=imagedao.list(albumId);
+        for (Image image: imagesToRemove) {
+            File f=new File(imagedao.uploadDirectory+"\\"+image.getFileName());
+            if (!f.delete()) throw new IOException();
+        }
+        albums.remove(albumId);
     }
 
     public Album get(int albumId){

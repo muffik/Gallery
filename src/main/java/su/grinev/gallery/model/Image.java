@@ -1,5 +1,8 @@
 package su.grinev.gallery.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.LocalDate;
 
 public class Image {
@@ -32,6 +35,8 @@ public class Image {
         this.id = id;
     }
 
+    @JsonIgnore
+    @JsonProperty(value = "fileName")
     public String getFileName() {
         return fileName;
     }
