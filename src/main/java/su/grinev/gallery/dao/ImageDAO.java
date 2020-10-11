@@ -42,7 +42,7 @@ public class ImageDAO {
     public void remove(int imageId) throws IOException {
         Image image=images.get(imageId);
         if (image==null) throw new ResourceNotFoundException("Invalid imageId");
-        File imageFile=new File(uploadDirectory+"\\"+images.get(imageId).getFileName());
+        File imageFile=new File(uploadDirectory+"/"+images.get(imageId).getFileName());
         imageFile.delete();
         if (imageFile.exists()) throw new IOException();
         images.remove(imageId);

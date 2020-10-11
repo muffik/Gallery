@@ -70,7 +70,7 @@ public class FileController {
         String originalName=file.getOriginalFilename();
         if (displayName==null) displayName=originalName;
         String hashedFilename=this.sha1(displayName+ LocalTime.now());
-        String fileName=uploadDirectory+"\\"+hashedFilename;
+        String fileName=uploadDirectory+"/"+hashedFilename;
         if (albumDAO.get(Integer.parseInt(albumId))==null) throw new ResourceNotFoundException("Album doesn't exist!");
 
         if (!file.isEmpty()) {
@@ -95,7 +95,7 @@ public class FileController {
         if (imageDAO.get(imageId)==null) throw new ResourceNotFoundException("Image doesn't exists!");
         InputStream inputStream;
         OutputStream outputStream;
-        String fileName=uploadDirectory+"\\"+imageDAO.get(imageId).getFileName();
+        String fileName=uploadDirectory+"/"+imageDAO.get(imageId).getFileName();
         try {
             byte[] bytes = new byte[65536];
             inputStream = new FileInputStream(fileName);

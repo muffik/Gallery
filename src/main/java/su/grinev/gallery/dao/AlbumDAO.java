@@ -1,7 +1,6 @@
 package su.grinev.gallery.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import su.grinev.gallery.exception.ResourceNotFoundException;
 import su.grinev.gallery.model.Album;
 import org.springframework.stereotype.Component;
@@ -48,7 +47,7 @@ public class AlbumDAO {
         if (albums.get(albumId)==null) throw new ResourceNotFoundException("Invalid albumId");
         List<Image> imagesToRemove=imagedao.list(albumId);
         for (Image image: imagesToRemove) {
-            File f=new File(imagedao.uploadDirectory+"\\"+image.getFileName());
+            File f=new File(imagedao.uploadDirectory+"/"+image.getFileName());
             if (!f.delete()) throw new IOException();
         }
         albums.remove(albumId);
