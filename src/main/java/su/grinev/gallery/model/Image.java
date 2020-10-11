@@ -9,12 +9,14 @@ public class Image {
     private int id;
     private int albumId;
     private String fileName;
+    private String originalName;
     private String displayName;
     private LocalDate uploadDate;
 
-    public Image(int id, int AlbumId, String displayName, String fileName){
+    public Image(int id, int AlbumId, String originalName, String displayName, String fileName){
         this.id=id;
         this.albumId=AlbumId;
+        this.originalName=originalName;
         this.displayName=displayName;
         this.fileName=fileName;
     }
@@ -61,12 +63,21 @@ public class Image {
         this.uploadDate = uploadDate;
     }
 
+    public String getOriginalName() {
+        return originalName;
+    }
+
+    public void setOriginalName(String originalName) {
+        this.originalName = originalName;
+    }
+
     @Override
     public String toString(){
         return "Image {" +
                 "id=" + this.id +
-                ", displayName='" + this.displayName + '\''+
+                ", originalName='" + this.originalName + '\''+
                 ", fileName='" + this.fileName + '\''+
+                ", displayName='" + this.displayName + '\''+
                 ", uploadDate='"+ this.uploadDate.toString() +'\''+'}';
     }
 }

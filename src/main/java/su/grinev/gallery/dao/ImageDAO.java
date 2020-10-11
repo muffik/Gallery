@@ -32,8 +32,8 @@ public class ImageDAO {
         return albumImages;
     }
 
-    public Image add(int albumId, String displayName, String fileName){
-        Image image=new Image(++IMAGE_COUNT, albumId, displayName, fileName);
+    public Image add(int albumId, String originalName, String fileName, String displayName){
+        Image image=new Image(++IMAGE_COUNT, albumId, originalName, displayName, fileName);
         image.setUploadDate(LocalDate.now());
         images.put(IMAGE_COUNT, image);
         return image;
@@ -42,7 +42,7 @@ public class ImageDAO {
     public void remove(int imageId) throws IOException {
         Image image=images.get(imageId);
         if (image==null) throw new ResourceNotFoundException("Invalid imageId");
-        File imageFile=new File(uploadDirectory+"\\"+images.get(imageId).getAlbumId()+"\\"+imageId+"\\"+images.get(imageId).getFileName());
+        File imageFile=new File(uploadDirectory+"\\"+images.get(imageId).getFileName());
         imageFile.delete();
         if (imageFile.exists()) throw new IOException();
         images.remove(imageId);

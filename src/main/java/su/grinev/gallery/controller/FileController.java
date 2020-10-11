@@ -17,6 +17,7 @@ import su.grinev.gallery.model.Image;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
 import java.awt.image.BufferedImage;
@@ -25,6 +26,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Iterator;
 
 @Controller
 public class FileController {
@@ -63,8 +65,10 @@ public class FileController {
     @RequestMapping(value="/image/upload", method=RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public @ResponseBody Image uploadImage(@RequestPart(value = "albumId") String albumId,
-                                           @RequestPart(value = "displayName") String displayName,
+                                           @RequestPart(value = "displayName", required = false) String displayName,
                                            @RequestPart(value = "file") MultipartFile file) throws IOException {
+        String originalName=file.getOriginalFilename();
+        if (displayName==null) displayName=originalName;
         String hashedFilename=this.sha1(displayName+ LocalTime.now());
         String fileName=uploadDirectory+"\\"+hashedFilename;
         if (albumDAO.get(Integer.parseInt(albumId))==null) throw new ResourceNotFoundException("Album doesn't exist!");
@@ -83,17 +87,7 @@ public class FileController {
         } else {
             throw new DataFormatException("File must not be empty!");
         }
-        try {
-            BufferedImage image = ImageIO.read(new File(fileName));
-            if (image == null) {
-                System.out.println("The file isn't an image!");
-                throw new DataFormatException("The file isn't an image!");
-            }
-        } catch(IOException ex) {
-            System.out.println("Unknown IO exception has occurred.");
-        }
-
-        return imageDAO.add(Integer.parseInt(albumId), displayName, hashedFilename);
+        return imageDAO.add(Integer.parseInt(albumId), originalName, hashedFilename, displayName);
     }
 
     @RequestMapping(value="/image", method=RequestMethod.GET, produces= MediaType.APPLICATION_OCTET_STREAM_VALUE)
@@ -106,7 +100,7 @@ public class FileController {
             byte[] bytes = new byte[65536];
             inputStream = new FileInputStream(fileName);
             outputStream = response.getOutputStream();
-            response.setHeader("Content-Disposition", "attachment; filename="+imageDAO.get(imageId).getDisplayName());
+            response.setHeader("Content-Disposition", "attachment; filename="+imageDAO.get(imageId).getOriginalName());
             while ((inputStream.read(bytes)) != -1) {
                 outputStream.write(bytes);
             }
