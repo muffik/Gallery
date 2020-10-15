@@ -30,6 +30,7 @@ public class FileController {
     private final AlbumDAO albumDAO;
     private final ImageDAO imageDAO;
 
+    /* todo: Zhdankin: почему protected? */
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Value("${uploadDir}")
@@ -37,6 +38,7 @@ public class FileController {
 
     @Autowired
     public FileController(AlbumDAO albumDAO, ImageDAO imageDAO){
+        /* todo: Zhdankin: попробуй следовать гугл-стайлу, это но не критично в рамках тестовго задания, но при профессиональной разработке нужно его соблюдать */
         this.albumDAO=albumDAO;
         this.imageDAO=imageDAO;
     }
@@ -53,6 +55,7 @@ public class FileController {
         return sha1;
     }
 
+    /* todo: Zhdankin: зачем делать метод, который говорит что не его надо использовать? */
     @RequestMapping(value="/image/upload", method=RequestMethod.GET, produces = {"application/json"})
     public @ResponseBody void provideUploadInfo() {
         throw new DataFormatException("Use POST for file uploading.");
@@ -63,8 +66,10 @@ public class FileController {
     public @ResponseBody Image uploadImage(@RequestPart(value = "albumId") String albumId,
                                            @RequestPart(value = "displayName", required = false) String displayName,
                                            @RequestPart(value = "file") MultipartFile file) throws IOException {
+        /* todo: Zhdankin: логика сохранения файла не должна размещаться в контроллере - ей самое место в Dao */
         String originalName=file.getOriginalFilename();
         if (displayName==null) displayName=originalName;
+        /* todo: Zhdankin: смысла в хешировании не особо много, а вот сохранение замедляет */
         String hashedFilename=this.sha1(displayName+ LocalTime.now());
         String fileName=uploadDirectory+"/"+hashedFilename;
         if (albumDAO.get(Integer.parseInt(albumId))==null) throw new ResourceNotFoundException("Album doesn't exist!");
@@ -73,9 +78,12 @@ public class FileController {
             try {
                 byte[] bytes = file.getBytes();
                 File f=new File(fileName);
+                /* todo: Zhdankin: какова верятность что такой файл существует? ) */
                 if(!f.exists()){ f.createNewFile(); }
+                /* todo: Zhdankin: зачем оборачивать в BufferedOutputStream? */
                 BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(f));
                 stream.write(bytes);
+                /* todo: Zhdankin: лучше использовать try-close синтаксис */
                 stream.close();
             } catch (Exception e) {
                 throw new DataFormatException("File upload error!");
@@ -96,6 +104,7 @@ public class FileController {
         } catch (IOException ex) {
             log.error("Unknown IO exception has occurred!");
         }
+        /* todo: Zhdankin: почему бы сразу не объявить параметр int вместо постоянного parseInt? */
         return imageDAO.add(Integer.parseInt(albumId), originalName, hashedFilename, displayName);
     }
 
@@ -106,13 +115,16 @@ public class FileController {
         OutputStream outputStream;
         String fileName=uploadDirectory+"/"+imageDAO.get(imageId).getFileName();
         try {
+            /* todo: Zhdankin: лучше использовать try-close синтаксис, так же common-io библиотеку (IOUtils.copy(from, to)) */
             byte[] bytes = new byte[65536];
             inputStream = new FileInputStream(fileName);
             outputStream = response.getOutputStream();
             response.setHeader("Content-Disposition", "attachment; filename="+imageDAO.get(imageId).getOriginalName());
             while ((inputStream.read(bytes)) != -1) {
+                /* todo: Zhdankin: есть подозрение что это портит контент файла, не совсем корректное копирование; если загрузить файл, а потом скачать - размер будет одинаковый? */
                 outputStream.write(bytes);
             }
+            /* todo: Zhdankin: обязательно ли делать flush? */
             outputStream.flush();
             outputStream.close();
             inputStream.close();

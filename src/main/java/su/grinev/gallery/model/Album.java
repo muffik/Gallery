@@ -8,6 +8,7 @@ public class Album {
     }
 
     public Album(int id, String name) {
+        /* todo: Zhdankin: давай попробуйем сделать идентификатором альбома UUID.randomString()? */
         this.id=id;
         this.name=name;
     }
