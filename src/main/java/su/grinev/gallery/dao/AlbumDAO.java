@@ -23,6 +23,7 @@ public class AlbumDAO {
     @Autowired
     public AlbumDAO(ImageDAO imagedao) {
         this.imagedao=imagedao;
+        /* todo: Zhdankin: есть идеи как предусмотреть конкурентный доступ? т.е. чтобы не было плохих последствий при одновременном выполнении создания альбома двумя пользователями? */
         albums = new HashMap<>();
 
         this.add("Landscape");
@@ -33,6 +34,7 @@ public class AlbumDAO {
     }
 
     public List<Album> index(){
+        /* todo: Zhdankin: зачем нужно оборачивание в ArrayList? */
         List<Album> albumsList=new ArrayList<>(albums.values());
         return albumsList;
     }
@@ -44,6 +46,7 @@ public class AlbumDAO {
     }
 
     public void remove(int albumId) throws IOException {
+        /* todo: Zhdankin: если у нас руками удалили файл из директории альбома, то теперь мы не сможем удалить альбом? */
         if (albums.get(albumId)==null) throw new ResourceNotFoundException("Invalid albumId");
         List<Image> imagesToRemove=imagedao.list(albumId);
         for (Image image: imagesToRemove) {

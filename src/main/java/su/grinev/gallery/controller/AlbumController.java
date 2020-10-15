@@ -23,6 +23,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/")
 class AlbumController {
+    /* todo: Zhdankin: не используемые поля затрудняют читаемость, их лучше сразу удалять */
     private static final String DEFAULT_PAGE_NUM="0";
     private static final String DEFAULT_PAGE_SIZE="100";
 
@@ -38,6 +39,7 @@ class AlbumController {
 
     @RequestMapping(value = "/index", method = RequestMethod.GET, produces = {"application/json"})
     @ResponseStatus(HttpStatus.OK)
+    /* todo: Zhdankin: использовать Pageable для потранички - ну так себе. Давай лучше без постранички? мешает немного. */
     public @ResponseBody Page<Album> index(@PageableDefault(size = 50, page = 0, sort = { "id" }, direction = Sort.Direction.DESC) Pageable pageable,
                              HttpServletRequest request, HttpServletResponse response){
         Page<Album> page= new PageImpl(albumDAO.index(), pageable, albumDAO.index().size());
@@ -61,6 +63,7 @@ class AlbumController {
 
     @RequestMapping(value ="/album", method = RequestMethod.POST, produces = {"application/json"})
     @ResponseStatus(HttpStatus.CREATED)
+    /* todo: Zhdankin: давай лучше сделаем так чтобы на вход создания альбома приходил json-объект, а не его поля в строке запроса? */
     public @ResponseBody Album add(@RequestParam(value = "name", required = true) String name){
         return albumDAO.add(name);
     }

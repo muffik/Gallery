@@ -8,6 +8,7 @@ class GalleryApplicationTests {
 
 	@Test
 	void contextLoads() {
+		/* todo: Zhdankin: предлагаю написать тест чего либо */
 	}
 
 }
